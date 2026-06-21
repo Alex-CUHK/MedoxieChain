@@ -1,0 +1,115 @@
+name: Release binaries
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        type: string
+        description: 'The tag to use for the Docker image.'
+        required: true
+  workflow_dispatch:
+    inputs:
+      prerelease_name:
+        description: "Suffix to use for manual pre-release."
+        required: false
+        type: string
+        default: "prerelease-test"
+
+
+jobs:
+
+  build:
+    name: Build binaries
+    strategy:
+      matrix:
+        include:
+          - arch: x86_64-unknown-linux-gnu
+            platform: ubuntu-22.04
+          - arch: aarch64-unknown-linux-gnu
+            platform: ubuntu-22.04-arm
+          - arch: x86_64-apple-darwin
+            platform: macos-latest
+          - arch: aarch64-apple-darwin
+            platform: macos-latest
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || '' }}
+
+      - name: Install Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          target: ${{ matrix.arch }}
+
+      - name: Build anvil-zksync for ${{ matrix.arch }}
+        run: |
+          cargo build --bin anvil-zksync --release --target ${{ matrix.arch }}
+
+      - name: Pack anvil-zksync
+        run: |
+          tar -C ./target/${{ matrix.arch }}/release -czf \
+            anvil-zksync-${{ inputs.tag || inputs.prerelease_name }}-${{ matrix.arch }}.tar.gz \
+            anvil-zksync
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: anvil-zksync-${{ matrix.arch }}
+          path: |
+            anvil-zksync-${{ inputs.tag || inputs.prerelease_name }}-${{ matrix.arch }}.tar.gz
+            ./target/${{ matrix.arch }}/release/anvil-zksync
+
+
+  upload-binaries:
+    name: Upload binaries
+    permissions:
+      contents: write
+      pull-requests: write
+      id-token: write
+      attestations: write
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || '' }}
+
+      - name: Define release name
+        id: release_tag
+        shell: 'bash -ex {0}'
+        run: |
+          [ ! -z "${{ inputs.tag }}" ] && TAG="${{ inputs.tag }}" \
+            || TAG="$(git rev-parse --short HEAD)"
+          echo "tag=${TAG}" >> "${GITHUB_OUTPUT}"
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: "anvil-zksync-*"
+          path: artifacts
+
+      - name: Binaries attestation
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: 'artifacts/**/anvil-zksync'
+
+      - name: Update release-please release artifacts
+        if: ${{ inputs.tag != '' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag }}
+          files: 'artifacts/**/anvil-zksync*.tar.gz'
+
+      - name: Create release
+        if: ${{ inputs.prerelease_name != '' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          name: 'anvil-zksync ${{ inputs.prerelease_name}} ${{ steps.release_tag.outputs.tag }}'
+          tag_name: ${{ steps.release_tag.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          prerelease: true
+          files: 'artifacts/**/anvil-zksync*.tar.gz'

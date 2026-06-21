@@ -1,0 +1,87 @@
+MedoxieChain Command Quick Reference
+====================================
+
+Environment and Build
+Command                                   Function
+./medoxie doctor                          Check local dependencies and RPC services
+./medoxie build                           Compile the MedoxieChain node
+
+Chain Management
+Command                                   Function
+./medoxie chain start                     Start the L2 blockchain
+./medoxie chain start --l1                Start the L1 Sidecar and L2 blockchain
+./medoxie chain status                    Show blockchain status
+./medoxie chain logs                      Show blocks, transactions, and performance charts
+./medoxie chain stop                      Stop the blockchain
+
+MDX Balances
+Command                                   Function
+./medoxie balance l1 <address>            Query an address's L1 MDX balance
+./medoxie balance l2 <address>            Query an address's L2 MDX balance
+
+MDX Transfers
+Command                                   Function
+./medoxie send l1 <address> <amount>      Send MDX on L1
+./medoxie send l2 <address> <amount>      Send MDX on L2
+
+L1/L2 Bridge
+Command                                   Function
+./medoxie bridge l1-to-l2 <address> <amount>  Move MDX from L1 to L2
+./medoxie bridge l2-to-l1 <address> <amount>  Move MDX from L2 to L1
+
+Smart Contracts
+Command                                   Function
+./medoxie contract list                   List Solidity contracts
+./medoxie contract new <name>             Create a contract template
+./medoxie contract edit <name>            Edit a contract in the terminal
+./medoxie contract show <name>            Show contract source code
+./medoxie contract compile [name]         Compile one or all contracts
+./medoxie contract deploy <l1|l2> <name>  Deploy a smart contract
+./medoxie contract deployments            Show recorded contract deployments
+./medoxie contract read <l1|l2> <address> '<signature>' [args]   Read contract state
+./medoxie contract write <l1|l2> <address> '<signature>' [args]  Write contract state
+
+DPoS Supernodes
+Command                                   Function
+./medoxie supernode list                  Show supernodes, delegated stake, and reward curve
+./medoxie supernode stake <node-id> <amount>  Delegate MDX to a supernode
+./medoxie supernode invite <address> [name]   Invite a candidate supernode operator
+
+Privacy and ZK
+Command                                   Function
+./medoxie privacy transfer                Submit a real L2 transfer with privacy metadata
+./medoxie zk watch                        Show the responsive ZK proof pipeline
+
+RVP Watcher and Challenger
+Command                                   Function
+./medoxie rvp watch                       Show watcher and challenger status
+./medoxie rvp challenge [batch]           Trigger the responsive proof flow for a batch
+
+Sequencer
+Command                                   Function
+./medoxie sequencer watch                 Show sequencer, voting power, and block charts
+
+Rollup
+Command                                   Function
+./medoxie rollup status                   Show the L2-to-L1 Rollup pipeline
+./medoxie rollup commit [batch]           Submit a batch commitment
+./medoxie rollup prove [batch]            Submit a batch proof
+./medoxie rollup execute [batch]          Execute a batch on L1
+
+Full Walkthrough
+Command                                   Function
+./medoxie showcase                        Run the primary module walkthrough
+
+OpenClaw Integration
+Command                                   Function
+./medoxie openclaw status                 Show OpenClaw integration status
+./medoxie openclaw actions                Show allowed blockchain actions
+./medoxie openclaw install                Install the MedoxieChain project skill
+
+Real Address Examples
+./medoxie balance l1 0xF067d82fcC4EE38Ae133D2CA1c2072a635032B5C
+./medoxie balance l2 0xF067d82fcC4EE38Ae133D2CA1c2072a635032B5C
+./medoxie send l1 0xF067d82fcC4EE38Ae133D2CA1c2072a635032B5C 0.1
+./medoxie send l2 0xF067d82fcC4EE38Ae133D2CA1c2072a635032B5C 0.1
+./medoxie bridge l1-to-l2 0xF067d82fcC4EE38Ae133D2CA1c2072a635032B5C 0.1
+./medoxie bridge l2-to-l1 0xF067d82fcC4EE38Ae133D2CA1c2072a635032B5C 0.1

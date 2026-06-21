@@ -1,0 +1,64 @@
+[package]
+name = "anvil-zksync"            # Compatible with the legacy bin crate name
+description = "MedoxieChain local L2 demo node, powered by anvil-zksync"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+homepage.workspace = true
+repository.workspace = true
+license.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[[bin]]
+name = "medoxiechain-node"
+path = "src/main.rs"
+
+[[bin]]
+name = "anvil-zksync"
+path = "src/main.rs"
+
+[dependencies]
+anvil_zksync_config.workspace = true
+anvil_zksync_api_server = { workspace = true, default-features = false }
+anvil_zksync_core = { workspace = true, default-features = false }
+anvil_zksync_l1_sidecar = { workspace = true, default-features = false }
+anvil_zksync_types.workspace = true
+zksync_error.workspace = true
+
+anvil_zksync_common.workspace = true
+anvil_zksync_traces.workspace = true
+
+zksync_types.workspace = true
+zksync_multivm.workspace = true
+zksync_telemetry.workspace = true
+alloy = { workspace = true, default-features = false, features = [
+    "signer-mnemonic",
+    "reqwest-rustls-tls",
+] }
+anyhow.workspace = true
+clap.workspace = true
+eyre.workspace = true
+hex.workspace = true
+itertools.workspace = true
+futures.workspace = true
+rand.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+serde_with.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+tower.workspace = true
+tower-http.workspace = true
+flate2.workspace = true
+url.workspace = true
+indicatif.workspace = true
+num.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+
+[features]
+default = ["zksync-os"]
+zksync-os = ["anvil_zksync_core/zksync-os"]
